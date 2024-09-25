@@ -67,7 +67,7 @@ fn find_matching_address(sender: Address, deployer: Address, init_code_hash: Fix
 /// CreateX.deployCreate3()
 //  salt = keccak256[
 //                       bytes32(uint256(uint160(address(sender)))) 
-//                     + bytes32(bytes20(uint256(uint160(address(sender)))) + bytes12(salt_seed))
+//                     + bytes32(bytes20(address(sender)) + bytes12(salt_seed))
 //                 ]
 
 fn main() {
