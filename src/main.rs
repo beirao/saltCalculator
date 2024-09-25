@@ -67,8 +67,10 @@ fn find_matching_address(sender: Address, deployer: Address, init_code_hash: Fix
 /// CreateX.deployCreate3()
 //  salt = keccak256[
 //                       bytes32(uint256(uint160(address(sender)))) 
-//                     + bytes32(bytes20(address(sender)) + bytes12(salt_seed))
+//                     + bytes32(bytes20(address(sender)) + bytes1(0x00) + bytes12(salt_seed))
 //                 ]
+// 
+// Where "bytes32(bytes20(address(sender)) + bytes1(0x00) + bytes12(salt_seed))" being the salt value to provide to CreateX.deployCreate3()
 
 fn main() {
     let sender = Address::from_slice(&hex::decode("92Cd849801A467098cDA7CD36756fbFE8A30A036").unwrap());
@@ -79,7 +81,7 @@ fn main() {
 
     let num_threads = 16; // Number of threads
 
-    let salt_range = U256::from(79228162514264337593543950335_i128) / U256::from(num_threads);
+    let salt_range = U256::from(309485009821345068724781055_i128) / U256::from(num_threads); // uint88.max / num_threads
 
     let mut threads = vec![];
     for i in 0..num_threads {
