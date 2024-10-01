@@ -6,5 +6,5 @@ edition = "2021"
 [dependencies]
 alloy-core = "0.8.3"
 alloy-primitives = "0.1.0"
-tiny-keccak = "2.0.2"
 hex = "0.4.3"
+tiny-keccak = "2.0.0"

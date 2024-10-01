@@ -29,13 +29,13 @@ fn find_matching_address(sender: Address, deployer: Address, init_code_hash: Fix
             bytes
         };
 
-        // Convert sender.0 (FixedBytes<20>) to &[u8] using as_ref()
-        let sender_bytes20: &[u8] = sender.0.as_ref();
-
-        // Create a buffer to fit sender_bytes20 (20 bytes) and salt_seed (12 bytes) for a total of 32 bytes
-        let mut combined: Vec<u8> = Vec::with_capacity(32);
-        combined.extend_from_slice(sender_bytes20); // Use the byte slice directly (20 bytes)
-        combined.extend_from_slice(&salt_seed.as_ref()); // Add the salt_seed (12 bytes)
+        let mut shifted_bytes32 = sender_bytes32;
+        shifted_bytes32.rotate_left(12);
+    
+        let mut combined = [0u8; 32];
+        for i in 0..32 {
+            combined[i] = shifted_bytes32[i] | salt_seed[i];
+        }
 
         // Concatenate sender_bytes32 and combined (32 bytes each)
         let mut to_hash: Vec<u8> = Vec::with_capacity(64);
@@ -52,7 +52,8 @@ fn find_matching_address(sender: Address, deployer: Address, init_code_hash: Fix
         let address: Address = deployer.create2(salt, init_code_hash);
 
         if address.bit_and(mask).bit_xor(pattern).is_zero() {
-            println!("Found matching address: {:?}, for salt: {:?}", address, hex::encode(combined));
+            println!("Found matching address: {:?}, for createX salt: {:?}", address, hex::encode(combined));
+            println!("Found matching address: {:?}, for raw salt: {:?}", address, hex::encode(salt));
             println!("Time elapsed is: {:?}", start.elapsed());
             //break;
             std::process::exit(1);
